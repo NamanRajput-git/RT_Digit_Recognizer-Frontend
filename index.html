@@ -119,7 +119,7 @@
             else if (capturedImage) pixels = imageDataToArray(capturedImage);
             else pixels = canvasToArray();
 
-            const res = await fetch("https://huggingface.co/spaces/<username>/<space-name>/api/predict", {
+            const res = await fetch("https://huggingface.co/spaces/namanraj/Real_Time_Handwritten_Digits_Classifier", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ pixels: pixels })
@@ -130,3 +130,4 @@
     </script>
 </body>
 </html>
+
