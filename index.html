@@ -113,21 +113,47 @@
         }
 
         // Predict function
-        async function predict() {
-            let pixels = null;
-            if (uploadedImage) pixels = imageDataToArray(uploadedImage);
-            else if (capturedImage) pixels = imageDataToArray(capturedImage);
-            else pixels = canvasToArray();
+ async function predict() {
+    let pixels = null;
 
-            const res = await fetch("https://huggingface.co/spaces/namanraj/Real_Time_Handwritten_Digits_Classifier", {
+    // 1️⃣ Determine which input to use
+    if (uploadedImage) {
+        pixels = imageDataToArray(uploadedImage);
+    } else if (capturedImage) {
+        pixels = imageDataToArray(capturedImage);
+    } else {
+        pixels = canvasToArray();
+    }
+
+    try {
+        // 2️⃣ Call Hugging Face Space API endpoint
+        const res = await fetch(
+            "https://huggingface.co/spaces/namanraj/Real_Time_Handwritten_Digits_Classifier/api/predict",
+            {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ pixels: pixels })
-            });
-            const data = await res.json();
-            document.getElementById("result").innerText = "Prediction: " + data.prediction;
+            }
+        );
+
+        // 3️⃣ Parse response
+        if (!res.ok) {
+            throw new Error(`API error: ${res.status}`);
         }
+        const data = await res.json();
+
+        // 4️⃣ Update result in HTML
+        document.getElementById("result").innerText = "Prediction: " + data.prediction;
+
+    } catch (error) {
+        console.error("Prediction failed:", error);
+        document.getElementById("result").innerText = "Prediction failed. Check console.";
+    }
+}
+
+
     </script>
 </body>
 </html>
+
 
